@@ -1,0 +1,149 @@
+# ---------------------------------------------------------------------------
+# PET FDD — Default fault configuration
+#
+# Each entry under `faults` defines a named fault scenario.  The values here
+# are used as UI defaults in the Streamlit app and can be overridden by the
+# user at runtime.
+#
+# Fields
+# ------
+# label       : human-readable name shown in the UI
+# tag         : Aspen variable path (use the exact path from your APD file)
+# fault_type  : one of sensor_bias | sensor_drift | sensor_failure |
+#               actuator_stuck | actuator_bias | actuator_gain |
+#               process_step  | process_ramp  | normal
+# magnitude   : fault amplitude (units depend on the variable)
+# start_time  : simulation time [s] at which the fault becomes active
+# duration    : how long [s] the fault lasts (null = until end)
+# profile     : step | ramp | drift
+# ramp_duration: time [s] for ramp/drift to reach full magnitude
+# ---------------------------------------------------------------------------
+
+simulation:
+  dt: 10.0          # Integration step size [s]
+  t_end: 1200.0     # Default simulation horizon [s]
+
+# Variable tags to monitor (read at every step even if not faulted)
+monitored_tags:
+  - "\\Data\\Streams\\FEED\\FmR\\"
+  - "\\Data\\Streams\\PROD\\FmR\\"
+  - "\\Data\\Blocks\\REACTOR\\Variables\\T\\"
+  - "\\Data\\Blocks\\REACTOR\\Variables\\P\\"
+  - "\\Data\\Blocks\\REACTOR\\Variables\\L\\"
+  - "\\Data\\Blocks\\REACTOR\\Variables\\XA\\"
+  - "\\Data\\Blocks\\HX\\Variables\\Q\\"
+  - "\\Data\\Blocks\\HX\\Variables\\T_hot_out\\"
+  - "\\Data\\Streams\\CW_IN\\FmR\\"
+  - "\\Data\\Streams\\CW_OUT\\T\\"
+  - "\\Data\\Streams\\CAT\\FmR\\"
+
+faults:
+  normal:
+    label: "Normal operation (no fault)"
+    tag: "\\Data\\Blocks\\REACTOR\\Variables\\T\\"
+    fault_type: normal
+    magnitude: 0.0
+    start_time: 0.0
+    duration: null
+    profile: step
+    ramp_duration: 60.0
+
+  reactor_temp_high:
+    label: "Reactor temperature high (+10 °C step)"
+    tag: "\\Data\\Blocks\\REACTOR\\Variables\\T\\"
+    fault_type: process_step
+    magnitude: 10.0
+    start_time: 300.0
+    duration: null
+    profile: step
+    ramp_duration: 60.0
+
+  reactor_temp_low:
+    label: "Reactor temperature low (-10 °C step)"
+    tag: "\\Data\\Blocks\\REACTOR\\Variables\\T\\"
+    fault_type: process_step
+    magnitude: -10.0
+    start_time: 300.0
+    duration: null
+    profile: step
+    ramp_duration: 60.0
+
+  feed_flow_increase:
+    label: "Feed flow increase (+20 kg/h step)"
+    tag: "\\Data\\Streams\\FEED\\FmR\\"
+    fault_type: process_step
+    magnitude: 20.0
+    start_time: 300.0
+    duration: null
+    profile: step
+    ramp_duration: 60.0
+
+  feed_flow_decrease:
+    label: "Feed flow decrease (-20 kg/h step)"
+    tag: "\\Data\\Streams\\FEED\\FmR\\"
+    fault_type: process_step
+    magnitude: -20.0
+    start_time: 300.0
+    duration: null
+    profile: step
+    ramp_duration: 60.0
+
+  cw_flow_loss:
+    label: "Cooling-water flow loss (-50 kg/h ramp)"
+    tag: "\\Data\\Streams\\CW_IN\\FmR\\"
+    fault_type: process_ramp
+    magnitude: -50.0
+    start_time: 300.0
+    duration: null
+    profile: ramp
+    ramp_duration: 120.0
+
+  catalyst_low:
+    label: "Catalyst flow low (-0.5 kg/h step)"
+    tag: "\\Data\\Streams\\CAT\\FmR\\"
+    fault_type: process_step
+    magnitude: -0.5
+    start_time: 300.0
+    duration: null
+    profile: step
+    ramp_duration: 60.0
+
+  temp_sensor_bias:
+    label: "Temperature sensor bias (+5 °C)"
+    tag: "\\Data\\Blocks\\REACTOR\\Variables\\T\\"
+    fault_type: sensor_bias
+    magnitude: 5.0
+    start_time: 300.0
+    duration: null
+    profile: step
+    ramp_duration: 60.0
+
+  temp_sensor_drift:
+    label: "Temperature sensor drift (up to +8 °C)"
+    tag: "\\Data\\Blocks\\REACTOR\\Variables\\T\\"
+    fault_type: sensor_drift
+    magnitude: 8.0
+    start_time: 300.0
+    duration: null
+    profile: drift
+    ramp_duration: 300.0
+
+  temp_sensor_failure:
+    label: "Temperature sensor failure (stuck at 999)"
+    tag: "\\Data\\Blocks\\REACTOR\\Variables\\T\\"
+    fault_type: sensor_failure
+    magnitude: 999.0
+    start_time: 300.0
+    duration: null
+    profile: step
+    ramp_duration: 60.0
+
+  pressure_high:
+    label: "Reactor pressure high (+0.2 bar ramp)"
+    tag: "\\Data\\Blocks\\REACTOR\\Variables\\P\\"
+    fault_type: process_ramp
+    magnitude: 0.2
+    start_time: 300.0
+    duration: null
+    profile: ramp
+    ramp_duration: 180.0
